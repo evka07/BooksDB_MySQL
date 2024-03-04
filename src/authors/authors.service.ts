@@ -1,6 +1,6 @@
-import { ConflictException, Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/shared/services/prisma.services';
+import { Injectable, ConflictException } from '@nestjs/common';
 import { Author } from '@prisma/client';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class AuthorsService {
@@ -13,13 +13,12 @@ export class AuthorsService {
   public getById(id: Author['id']): Promise<Author | null> {
     return this.prismaService.author.findUnique({
       where: { id },
-      include: { books: true },
     });
   }
 
-  public create(authorData: Omit<Author, 'id'>): Promise<Author> {
+  public async create(authorData: Omit<Author, 'id'>): Promise<Author> {
     try {
-      return this.prismaService.author.create({
+      return await this.prismaService.author.create({
         data: authorData,
       });
     } catch (error) {
@@ -45,7 +44,7 @@ export class AuthorsService {
     }
   }
 
-  public delete(id: Author['id']): Promise<Author> {
+  public deleteById(id: Author['id']): Promise<Author> {
     return this.prismaService.author.delete({
       where: { id },
     });
